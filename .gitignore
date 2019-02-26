@@ -3,5 +3,4 @@
 .vagrant
 ~*
 .vaultpass
-root-ca-*
-int-ca-*
+tls
