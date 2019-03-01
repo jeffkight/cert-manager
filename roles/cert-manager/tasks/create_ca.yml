@@ -1,0 +1,110 @@
+#
+# (c) Copyright 2019 Jeff Kight
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+# Ansible playbooks to Manage CAs, Intermediate CAs and Certificates
+#
+# Author: Jeff Kight <jeff@kight.net>
+#
+---
+
+# The Distinguished Name (DN) uniquely identifies an entity in an X.509 certificate.
+# The following attribute types are commonly found in the DN:
+# SERIALNUMBER          Certificate serial number
+# MAIL 	                Email address
+# E 	                  Email address (Deprecated in preference to MAIL)
+# UID or USERID 	      User identifier
+# CN 	                  Common Name
+# T 	                  Title
+# OU 	                  Organizational Unit name
+# DC 	                  Domain component
+# O 	                  Organization name
+# STREET 	              Street / First line of address
+# L 	                  Locality name
+# ST (or SP or S) 	    State or Province name
+# PC 	                  Postal code / zip code
+# C 	                  Country
+# UNSTRUCTUREDNAME 	    Host name
+# UNSTRUCTUREDADDRESS   IP address
+# DNQ 	                Distinguished name qualifier
+
+- name: Create Root CA private key
+  shell: >
+    {{ openssl_cmd }} genrsa
+    -aes256
+    -passout pass:{{ root_passphrase }}
+    -out {{ private_dir }}/{{ ca_private_key }}
+    4096
+  args:
+    chdir: "{{ tls_dir }}/{{ root_ca_dir }}"
+    creates: "{{ private_dir }}/{{ ca_private_key }}"
+
+- name: Create self-signed Root CA
+  shell: >
+    {{ openssl_cmd }} req
+    -config {{ ca_config }}
+    -new
+    -x509
+    -sha512
+    -extensions v3_ca
+    -key {{ private_dir }}/{{ ca_private_key }}
+    -out {{ certs_dir }}/{{ ca_public_cert }}
+    -subj "/C={{ ca_country }}/ST={{ ca_state }}/L={{ ca_locality }}/O={{ ca_org }}/OU={{ ca_org_unit }}/CN={{ ca_common_name }} Private Root CA/MAIL={{ ca_email|lower }}"
+    -days {{ ca_duration }}
+    -set_serial 0
+    -passin pass:{{ root_passphrase }}
+  args:
+    chdir: "{{ tls_dir }}/{{ root_ca_dir }}"
+    creates: "{{ certs_dir }}/{{ ca_public_cert }}"
+
+- name: Create private key and CSR for the Intermediate CA
+  shell: >
+    {{ openssl_cmd }} req
+    -config {{ ca_config }}
+    -new
+    -newkey rsa:4096
+    -keyout {{ private_dir }}/{{ ca_private_key }}
+    -out {{ csr_dir }}/{{ ca_csr }}
+    -passout pass:{{ intermediate_passphrase }}
+    -subj "/C={{ ca_country }}/ST={{ ca_state }}/L={{ ca_locality }}/O={{ ca_org }}/OU={{ ca_org_unit }}/CN={{ ca_common_name }} Private SSL CA/MAIL={{ ca_email|lower }}"
+    -days {{ ca_duration }}
+  args:
+    chdir: "{{ tls_dir }}/{{ int_ca_dir }}"
+    creates: "{{ csr_dir }}/{{ ca_csr }}"
+
+- name: Create the intermediate certificate
+  shell: >
+    {{ openssl_cmd }} ca
+    -config {{ ca_config }}
+    -extensions v3_intermediate_ca
+    -days {{ ca_duration }}
+    -notext
+    -md sha256
+    -in ../{{ int_ca_dir }}/{{ csr_dir }}/{{ ca_csr }}
+    -out ../{{ int_ca_dir }}/{{ certs_dir }}/{{ ca_public_cert }}
+    -passin pass:{{ root_passphrase }}
+    -batch
+  args:
+    chdir: "{{ tls_dir }}/{{ root_ca_dir }}"
+    creates: "../{{ int_ca_dir }}/{{ certs_dir }}/{{ ca_public_cert }}"
+
+- name: Create the certificate chain
+  shell: >
+    cat
+    {{ int_ca_dir }}/{{ certs_dir }}/{{ ca_public_cert }}
+    {{ root_ca_dir }}/{{ certs_dir }}/{{ ca_public_cert }}
+    > {{ int_ca_dir }}/{{ certs_dir }}/{{ ca_cert_chain }}
+  args:
+    chdir: "{{ tls_dir }}"
+    creates: "{{ int_ca_dir }}/{{ certs_dir }}/{{ ca_cert_chain }}"

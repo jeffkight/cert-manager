@@ -1,0 +1,106 @@
+#
+# (c) Copyright 2019 Jeff Kight
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+# Ansible playbooks to Manage CAs, Intermediate CAs and Certificates
+#
+# Author: Jeff Kight <jeff@kight.net>
+#
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  roles:
+    - cert-manager
+
+  vars_prompt:
+    - name: ca_domain
+      prompt: "Enter domain"
+      private: no
+      confirm: no
+      default: "domain.tld"
+      when: site_id is not defined
+
+    - name: ca_common_name
+      prompt: "Enter CA common name (Private CA will be appended automatically)"
+      private: no
+      confirm: no
+      default: "My Company"
+      when: ca_common_name is not defined
+
+    - name: ca_org
+      prompt: "Enter the CA organization"
+      private: no
+      confirm: no
+      default: "My Company"
+      when: ca_org is not defined
+
+    - name: ca_org_unit
+      prompt: "Enter the CA organizational unit"
+      private: no
+      confirm: no
+      default: "Infrastructure Services"
+      when: ca_org_unit is not defined
+
+    - name: ca_country
+      prompt: "Enter the CA country (2 letters)"
+      private: no
+      confirm: no
+      default: "US"
+      when: ca_country is not defined
+
+    - name: ca_state
+      prompt: "Enter the CA state"
+      private: no
+      confirm: no
+      default: "State"
+      when: ca_state is not defined
+
+    - name: ca_locality
+      prompt: "Enter the CA locality"
+      private: no
+      confirm: no
+      default: "City"
+      when: ca_locality is not defined
+
+    - name: ca_duration
+      prompt: "Enter the CA duration in days"
+      private: no
+      confirm: no
+      default: 3650
+      when: ca_duration is not defined
+
+    - name: ca_crl_duration
+      prompt: "Enter the CRL CA duration in days"
+      private: no
+      confirm: no
+      default: 30
+      when: ca_crl_duration is not defined
+
+    - name: ca_email
+      prompt: "Enter the CA email"
+      private: no
+      confirm: no
+      default: "admin@domain.tld"
+      when: ca_email is not defined
+
+  tasks:
+    - set_fact:
+        tls_dir: "{{ tls_root }}/{{ ca_domain }}"
+        certs_id: "{{ ansible_date_time.epoch }}"
+
+    - import_tasks: roles/cert-manager/tasks/prep_ca.yml
+    - import_tasks: roles/cert-manager/tasks/create_ca.yml

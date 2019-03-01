@@ -1,0 +1,95 @@
+#
+# (c) Copyright 2019 Jeff Kight
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+# Ansible playbooks to Manage CAs, Intermediate CAs and Certificates
+#
+# Author: Jeff Kight <jeff@kight.net>
+#
+---
+
+# tls
+# └── domain
+#     ├── intermediate-ca
+#     │   ├── certs
+#     │   │   ├── ca.crt.pem        CA public certificate
+#     │   │   └── chain.crt.pem     Int+Root CA public certificate (distribute)
+#     │   ├── crl
+#     │   │   └── ca.crl.pem        List of revoked keys (publish)
+#     │   ├── crlnumber             Next CRL number
+#     │   ├── csr
+#     │   │   └── ca.csr
+#     │   ├── index.txt             Registered certificates
+#     │   ├── index.txt.attr
+#     │   ├── newcerts              Copy of each certificate signed
+#     │   ├── openssl.cnf           CA configuration
+#     │   ├── private
+#     │   │   └── ca.key.pem        CA private key (keep safe)
+#     │   └── serial                Next serial number
+#     ├── root-ca                   Root CA information
+#     │   ├── certs
+#     │   │   └── ca.crt.pem        CA public certificate
+#     │   ├── crl
+#     │   │   └── ca.crl.pem        List of revoked keys (publish)
+#     │   ├── csr
+#     │   ├── index.txt             Registered certificates
+#     │   ├── index.txt.attr
+#     │   ├── newcerts              Copy of each certificate signed
+#     │   │   └── 1000.pem
+#     │   ├── openssl.cnf           CA configuration
+#     │   ├── private
+#     │   │   └── ca.key.pem        CA private key (keep safe)
+#     │   ├── serial                Next serial number
+#     └── store
+#         └── host.domain.tld
+#             └── YYYY-MM-DD
+#                 ├── openssl_csr_san.cnf           Host configuration
+#                 ├── host.domain.tld.crt.pem       Host certificate
+#                 ├── host.domain.tld.csr           Host signing request
+#                 ├── host.domain.tld.key.pem       Host key
+#                 └── host.domain.tld.keycrt.pem    Host key+certificate combo
+
+tls_root: tls
+
+root_ca_dir: root-ca
+int_ca_dir: ssl-ca
+store_dir: store
+certs_dir: certs
+crl_dir: crl
+new_certs_dir: newcerts
+private_dir: private
+csr_dir: csr
+
+ca_config: openssl.cnf
+ca_private_key: ca.key.pem
+ca_public_cert: ca.crt.pem
+ca_revoked_keys: ca.crl.pem
+ca_next_serial: serial
+ca_registered_certificates: index.txt
+ca_next_crl: crlnumber
+ca_csr: ca.csr
+ca_cert_chain: chain.crt.pem
+
+root_serial_start: 1000
+intermediate_serial_start: 2000
+intermediate_crl_start: 3000
+
+host_config: openssl_csr_san.cnf
+host_key_suffix: key.pem
+host_csr_suffix: csr
+host_cert_suffix: crt.pem
+host_key_cert_suffix: keycrt.pem
+
+# openssl_cmd: "/usr/local/opt/openssl/bin/openssl"
+openssl_cmd: "openssl"

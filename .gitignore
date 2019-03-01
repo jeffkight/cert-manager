@@ -4,3 +4,4 @@
 ~*
 .vaultpass
 tls
+*.csr
