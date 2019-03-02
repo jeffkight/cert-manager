@@ -1,4 +1,4 @@
-# Ansible playbooks to Manage CAs, Intermediate CAs and Certificates
+# Ansible playbooks to create and use CAs, Intermediate/SSL CAs and new certs and signing CSRs
 
 When I setup labs and POC environments, I often need or want to test with a functioning SSL environment.  These playbooks are evolving to help me manage a Self Signed Root CA and Intermediate SSL CA environment.  
 
