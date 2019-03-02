@@ -323,3 +323,10 @@ localhost                  : ok=11   changed=5    unreachable=0    failed=0
 
 * [ ]  Automate webserver configuration for certificate revocation lists
 * [ ]  Handle the certificate revocation process
+* [ ]  Handle certificate renewals
+
+
+## Credit to blogs and ideas
+
+* http://dadhacks.org/2017/12/27/building-a-root-ca-and-an-intermediate-ca-using-openssl-and-debian-stretch/
+* http://radiac.net/blog/2015/05/self-ca/
