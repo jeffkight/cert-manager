@@ -11,19 +11,12 @@ When signing certificates / CSRs, you have the opportunity to create:
 
 ## Requirements
 
-* [ ] openssl installed on local system
+* [x] openssl installed on local system
 
-Tested on MacOS Mojave 10.14.3 with openssl from Homebrew
+## Tested on
 
-`brew info openssl`
-```
-openssl: stable 1.0.2q (bottled) [keg-only]
-SSL/TLS cryptography library
-https://openssl.org/
-/usr/local/Cellar/openssl/1.0.2q (1,794 files, 12.1MB)
-  Poured from bottle on 2019-02-17 at 07:53:24
-From: https://github.com/Homebrew/homebrew-core/blob/master/Formula/openssl.rb
-```
+* [x]  MacOS Mojave 10.14.3 with Homebrew openssl: stable 1.0.2q
+* [x]  CentOS7 Linux release 7.6.1810 (Core) with OpenSSL 1.0.2k-fips
 
 ### Create ansible vault protected variables for the secrets to the Root CA key and the Intermediate/SSL CA key
 
