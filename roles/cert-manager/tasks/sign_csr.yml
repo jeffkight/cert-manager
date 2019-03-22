@@ -75,3 +75,15 @@
   when:
     - cert_server | bool
     - cert_client | bool
+
+- name: get cert
+  shell: cat ../../../{{ host_dir}}/{{ csr_cn }}.{{ host_cert_suffix }}
+  register: cert_result
+  args:
+    chdir: "{{ tls_dir }}/{{ int_ca_dir }}"
+
+- name: output cert
+  pause:
+    seconds: 1
+    prompt: |
+      {{ cert_result.stdout }}
