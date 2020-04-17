@@ -29,7 +29,7 @@
     -md sha512
     -in ../../../{{ host_dir}}/{{ csr_cn }}.{{ host_csr_suffix }}
     -out ../../../{{ host_dir}}/{{ csr_cn }}.{{ host_cert_suffix }}
-    -passin pass:{{ intermediate_passphrase }}
+    -passin 'pass:{{ intermediate_passphrase }}'
     -batch
   args:
     chdir: "{{ tls_dir }}/{{ int_ca_dir }}"
@@ -48,7 +48,7 @@
     -md sha512
     -in ../../../{{ host_dir}}/{{ csr_cn }}.{{ host_csr_suffix }}
     -out ../../../{{ host_dir}}/{{ csr_cn }}.{{ host_cert_suffix }}
-    -passin pass:{{ intermediate_passphrase }}
+    -passin 'pass:{{ intermediate_passphrase }}'
     -batch
   args:
     chdir: "{{ tls_dir }}/{{ int_ca_dir }}"
@@ -67,7 +67,7 @@
     -md sha512
     -in ../../../{{ host_dir}}/{{ csr_cn }}.{{ host_csr_suffix }}
     -out ../../../{{ host_dir}}/{{ csr_cn }}.{{ host_cert_suffix }}
-    -passin pass:{{ intermediate_passphrase }}
+    -passin 'pass:{{ intermediate_passphrase }}'
     -batch
   args:
     chdir: "{{ tls_dir }}/{{ int_ca_dir }}"

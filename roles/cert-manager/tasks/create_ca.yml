@@ -43,7 +43,7 @@
   shell: >
     {{ openssl_cmd }} genrsa
     -aes256
-    -passout pass:{{ root_passphrase }}
+    -passout 'pass:{{ root_passphrase }}'
     -out {{ private_dir }}/{{ ca_private_key }}
     4096
   args:
@@ -63,7 +63,7 @@
     -subj "/C={{ ca_country }}/ST={{ ca_state }}/L={{ ca_locality }}/O={{ ca_org }}/OU={{ ca_org_unit }}/CN={{ ca_common_name }} Private Root CA/MAIL={{ ca_email|lower }}"
     -days {{ ca_duration }}
     -set_serial 0
-    -passin pass:{{ root_passphrase }}
+    -passin 'pass:{{ root_passphrase }}'
   args:
     chdir: "{{ tls_dir }}/{{ root_ca_dir }}"
     creates: "{{ certs_dir }}/{{ ca_public_cert }}"
@@ -76,7 +76,7 @@
     -newkey rsa:4096
     -keyout {{ private_dir }}/{{ ca_private_key }}
     -out {{ csr_dir }}/{{ ca_csr }}
-    -passout pass:{{ intermediate_passphrase }}
+    -passout 'pass:{{ intermediate_passphrase }}'
     -subj "/C={{ ca_country }}/ST={{ ca_state }}/L={{ ca_locality }}/O={{ ca_org }}/OU={{ ca_org_unit }}/CN={{ ca_common_name }} Private SSL CA/MAIL={{ ca_email|lower }}"
     -days {{ ca_duration }}
   args:
@@ -93,7 +93,7 @@
     -md sha256
     -in ../{{ int_ca_dir }}/{{ csr_dir }}/{{ ca_csr }}
     -out ../{{ int_ca_dir }}/{{ certs_dir }}/{{ ca_public_cert }}
-    -passin pass:{{ root_passphrase }}
+    -passin 'pass:{{ root_passphrase }}'
     -batch
   args:
     chdir: "{{ tls_dir }}/{{ root_ca_dir }}"
